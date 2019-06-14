@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script class="jsbin" src="jquery.min.js"></script>
+    <script src="image-outline-min.js"></script>
+    <script src="d3.v3.js"></script>
+    <script src="canvg.js"></script>
+    <script src="app.js"></script>
+    <meta charset=utf-8 />
+    <title>SVG OUTLINE</title>
+    <style type="text/css">
+        body {
+            background-color: silver;
+        }
+        
+        canvas {
+            border: 1px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <input class="form-control col-xs-4" id="files" type="file" name="pic" accept="image/*">
+    <div id="SVGdiv"></div>
+    <canvas id="canvgcanvas" style="display: block!important;"></canvas>
+    <!-- <canvas id="canvas" width=300 height=300></canvas> -->
+</body>
+<script>
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+
+</html>

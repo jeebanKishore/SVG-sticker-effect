@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script class="jsbin" src="jquery.min.js"></script>
+    <script src="image-outline-min.js"></script>
+    <script src="d3.v3.js"></script>
+    <script src="canvg.js"></script>
+    <meta charset=utf-8 />
+    <title>SVG OUTLINE</title>
+</head>
+
+<body>
+    <input class="form-control col-xs-4" id="files" type="file" name="pic" accept="image/*">
+    <div id="SVGdiv"></div>
+    <canvas id="canvgcanvas" style="display: block!important;"></canvas>
+    <canvas id="canvas" style="display: block!important;"></canvas>
+</body>
+<script>
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+        // Loop through the FileList and render image files as thumbnails.
+        for (var i = 0, f; f = files[i]; i++) {
+            // Only process image files.
+            if (!f.type.match('image.*')) {
+                continue;
+            }
+            var reader = new FileReader();
+            // Closure to capture the file information.
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    // Render thumbnail.
+                    var svgContainer = document.getElementById('SVGdiv');
+                    //svgContainer.innerHTML = [e.target.result];
+                    var str = e.target.result;
+                    var n = str.indexOf("<svg");
+                    str = str.substring(n, str.length);
+                    svgContainer.innerHTML = str;
+                    $('svg').attr("id", "svg");
+                    var svgData = document["getElementById"]('SVGdiv')["innerHTML"];
+                    var svgText = document.getElementById("svg").outerHTML;
+                    var bBox = document.getElementById("svg").getBBox();
+                    var canvgCanvas = document.getElementById("canvgcanvas");
+                    canvg(canvgCanvas, str, {
+                        ignoreMouse: true,
+                        ignoreAnimation: true,
+                        useCORS: true,
+                        renderCallback: function() {
+                            var image = new Image();
+                            image.src = canvgCanvas.toDataURL();
+                            image.onload = function() {
+                                //console.log(img);
+                                var polygon = getImageOutline(image);
+                                var svg;
+                                //The data for our line
+
+                                //This is the accessor function we talked about above
+                                var lineFunction = d3.svg.line()
+                                    .x(function(d) {
+                                        return d.x;
+                                    })
+                                    .y(function(d) {
+                                        return d.y;
+                                    })
+                                    .interpolate("linear");
+
+                                //The SVG Container
+                                var svgContainer = d3.select("#svg");
+
+                                //The line SVG Path we draw
+                                var z = lineFunction(polygon);
+                                z += "z";
+                                //console.log(z);
+                                var lineGraph = svgContainer.append("path")
+                                    .attr("d", z)
+                                    .attr("stroke", "red")
+                                    .attr("paint-order", "stroke")
+                                    .attr("stroke-width", 4)
+                                    .attr("fill", "none");
+                            }
+                        }
+                    });
+                };
+            })(f);
+            reader.readAsText(f);
+        }
+    }
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+
+</html>
